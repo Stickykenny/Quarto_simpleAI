@@ -16,6 +16,7 @@ class Piece :
         self.tall = size
         self.square = form
         self.hollow = top
+
     @property
     def showPieceInfo(self) :
         print(self.id, self.black, self.tall, self.square, self.hollow)
@@ -36,21 +37,21 @@ class Piece :
 
 #Instancie les pièces
 pieces = [
-Piece("0",  False ,False, False, False),
-Piece("1",  False ,False, False, True ),
-Piece("2",  False ,False, True , False),
-Piece("3",  False ,False, True , True ),
-Piece("4",  False ,True , False, False),
-Piece("5",  False ,True , False, True ),
-Piece("6",  False ,True , True , False),
-Piece("7",  False ,True , True , True ),
+Piece("0000",  False ,False, False, False),
+Piece("0001",  False ,False, False, True ),
+Piece("0010",  False ,False, True , False),
+Piece("0011",  False ,False, True , True ),
+Piece("0100",  False ,True , False, False),
+Piece("0101",  False ,True , False, True ),
+Piece("0110",  False ,True , True , False),
+Piece("0111",  False ,True , True , True ),
     
-Piece("8" , True  ,False, False, False),
-Piece("9" , True  ,False, False, True ),
-Piece("10", True  ,False, True , False),
-Piece("11", True  ,False, True , True ),
-Piece("12", True  ,True , False, False),
-Piece("13", True  ,True , False, True ),
-Piece("14", True  ,True , True , False),
-Piece("15", True  ,True , True , True )
+Piece("1000" , True  ,False, False, False),
+Piece("1001" , True  ,False, False, True ),
+Piece("1010", True  ,False, True , False),
+Piece("1011", True  ,False, True , True ),
+Piece("1100", True  ,True , False, False),
+Piece("1101", True  ,True , False, True ),
+Piece("1110", True  ,True , True , False),
+Piece("1111", True  ,True , True , True )
 ]
