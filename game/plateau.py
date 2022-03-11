@@ -113,7 +113,7 @@ class Board :
         return self.board
 
 
-
+""" 
 if __name__ == "__main__":
     print('This file "plateau.py"  is ran directly')
     b= Board()
@@ -127,4 +127,5 @@ if __name__ == "__main__":
     #piecesrestantes
     #print(pieces[5].getPieceInfo)
 else:
-    print('This file "quarto.py" was imported')
+    print('This file "quarto.py" was imported')  
+"""
