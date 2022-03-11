@@ -1,4 +1,5 @@
-from piece import pieces
+from piece import *
+import numpy as np
 class Board :
     def __init__(self) :
         self.board = [[None for i in range(4)] for j in range(4)]
@@ -6,13 +7,65 @@ class Board :
     def placerPiece(self, piece,line,column) :
         # pblrm case dispo
         if self.board[line][column] == None: 
-            self.board[line][column] = piece.affichage
+            self.board[line][column] = piece.id
             return True
         return False
 
-    def checkState(self,board,piece, line, column) :
+
+    def checkColumn(self, board, line, column) :
+        countC = [0,0,0,0]
+        for i in range(4) : 
+            if board.getGrid[i][column] == None :
+                print("CountC Ya un NONE")
+                return False
+
+            countC = np.add(countC, Piece.getPiece(int(board.getGrid[i][column])).getPieceValue)  
+        print("countC value :",countC)
+
+        if 0 in countC :
+            print("0 detected")
+            return True
+        if 4 in countC :
+            print("4 detected")
+            return True
+        return False
+
+    def checkLine(self, board, line, column) :
+        countL = [0,0,0,0]
+        for j in range(4) : 
+            if board.getGrid[line][j] == None :
+                print("CountL Ya un NONE")
+                return False
+
+            countL = np.add(countL, Piece.getPiece(int(board.getGrid[line][j])).getPieceValue)  
+        print("countL value :",countL)
+
+        if 0 in countL :
+            print("0 detected")
+            return True
+        if 4 in countL :
+            print("4 detected")
+            return True
+        return False
+        
+
+    def checkState(self,board, line, column) :
         """Vérifie si placer une pièce en x y fait terminer la game (vérifie ligne/colonne/diagonale)
         Retourne Vrai quand ca gagne"""
+
+        if board.checkColumn( board, line, column) :
+            print("Colonne gagnante")
+            return True
+        else : 
+            print("Colonne pas gagnante")
+
+        if board.checkLine( board, line, column) :
+            print("Ligne gagnante")
+            return True
+        else : 
+            print("Ligne pas gagnante")
+
+        #TODO diagonale
 
         """
         VERIF SI LIGNE EST PLEINE ou non 
@@ -50,9 +103,13 @@ class Board :
         return False
 
     def showGrid(self) :
-        """Affiche et renvoi la grille"""
+        """Affiche la grille"""
         for i in range(len(self.board)) :
             print(self.board[i])
+
+    @property
+    def getGrid(self) :
+        """Renvoi la grille"""
         return self.board
 
 
@@ -60,14 +117,14 @@ class Board :
 if __name__ == "__main__":
     print('This file "plateau.py"  is ran directly')
     b= Board()
+    b.placerPiece(pieces[0], 0,0)
+    b.placerPiece(pieces[1], 0,1)
+    b.placerPiece(pieces[2], 0,2)
+    b.placerPiece(pieces[12], 0,3)
+    #15 0 13 9
     b.showGrid()
-    print("\n \nafter putting some pieces")
-    b.placerPiece(pieces[1], 0,2)
-
-    b.placerPiece(pieces[8], 3,3)
-    b.showGrid()
-
+    b.checkState(b, 0, 0)
     #piecesrestantes
-    print(pieces[5].getPieceInfo)
+    #print(pieces[5].getPieceInfo)
 else:
     print('This file "quarto.py" was imported')

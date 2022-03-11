@@ -15,8 +15,8 @@ board.showGrid()
 
 
 while gameON :
-    print("----------------------------\nTour ",turn,"\n ----------------------------")
-    print("Joueur ",player_turn," doit sélectionner une pièce pour le Joueur ",(player_turn+1)%2)
+    print("----------------------------\nTour ",turn,"\n----------------------------")
+    print("Joueur ",player_turn,"doit sélectionner une pièce pour le Joueur ",(player_turn+1)%2)
     print("Avec quel pièce l'adversaire doit-il jouer ?")
 
     #TODO Make it impossible to put impossible number, here or inside the function
@@ -40,7 +40,7 @@ while gameON :
 
     print("Rappel vous avez choisi la pièce : ",chosenPiece.getPieceInfo) # changer affichage après ?
     
-    print("Joueur ",player_turn,"Choisir la case où vous devez déposer la piece")
+    print("Joueur ",((player_turn+1)%2),"Choisir la case où vous devez déposer la piece")
 
     #TODO do while case existante <4
     inputcorrect = False
@@ -63,8 +63,9 @@ while gameON :
     board.showGrid()
 
     #TODO Faire la fct checkState
-    if board.checkState(chosenPiece, positionX, positionY) : 
+    if board.checkState(board, positionX, positionY)  : 
         print("Victoire du joueur ",player_turn)
+        gameON = False
 
     if turn == 16 : #Jsp si c'est 16 ou autre
         print("PLUS DE PIECES DISPO!")
