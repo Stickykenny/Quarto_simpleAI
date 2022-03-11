@@ -16,9 +16,21 @@ class Piece :
         self.tall = size
         self.square = form
         self.hollow = top
-
-    def affichePiece(self) :
+    @property
+    def showPieceInfo(self) :
         print(self.id, self.black, self.tall, self.square, self.hollow)
+        
+    @property
+    def getPieceInfo(self) :
+        return [self.black,
+            self.tall,
+            self.square,
+            self.hollow,]
+
+    @staticmethod
+    def getPiece(id) :
+        return pieces[id]
+
 
 
 
@@ -42,8 +54,3 @@ Piece("13", True  ,True , False, True ),
 Piece("14", True  ,True , True , False),
 Piece("15", True  ,True , True , True )
 ]
-
-"""
-for j in pieces :
-    j.affichePiece()
-"""

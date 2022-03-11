@@ -17,10 +17,19 @@ class Board :
             print(self.board[i])
         return self.board
 
-b= Board()
-b.showGrid()
-print("\n \nafter putting some pieces")
-b.placerPiece(pieces[1], 0,2)
 
-b.placerPiece(pieces[8], 3,3)
-b.showGrid()
+
+if __name__ == "__main__":
+    print('This file "plateau.py"  is ran directly')
+    b= Board()
+    b.showGrid()
+    print("\n \nafter putting some pieces")
+    b.placerPiece(pieces[1], 0,2)
+
+    b.placerPiece(pieces[8], 3,3)
+    b.showGrid()
+
+    #piecesrestantes
+    print(pieces[5].getPieceInfo)
+else:
+    print('This file "quarto.py" was imported')
