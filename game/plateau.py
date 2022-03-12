@@ -50,7 +50,6 @@ class Board :
         
     def checkDiagonal(self, board, line, column) :
         countD = [0,0,0,0]
-        full= False
 
         if line == column :
             for d in range(4) : 
@@ -59,7 +58,6 @@ class Board :
                     return False
                 countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
             print("countD1 value :",countD)
-            full= True
         
         if (line + column == 3):
             for d in range(4) : 
@@ -68,16 +66,15 @@ class Board :
                     return False  
                 countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
             print("countD2 value :",countD)
-            full= True
-        
-        if full:
-            if 0 in countD :
-                print("0 detected")
-                return True
-            if 4 in countD :
-                print("4 detected")
-                return True
-            return False
+
+
+        if 0 in countD :
+            print("0 detected")
+            return True
+        if 4 in countD :
+            print("4 detected")
+            return True
+        return False
     
 
 
@@ -97,12 +94,13 @@ class Board :
             return True
         #else : 
             #print("Ligne pas gagnante")
-
-        if board.checkDiagonal( board, line, column) :
-            print("Diagonale gagnante")
-            return True
-        #else : 
-            #print("Diagonale pas gagnante")    
+            
+        if (line == column or (line + column == 3)) :
+            if board.checkDiagonal( board, line, column) :
+                print("Diagonale gagnante")
+                return True
+            #else : 
+                #print("Diagonale pas gagnante")    
         return False
 
     def showGrid(self) :
