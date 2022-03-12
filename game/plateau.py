@@ -56,9 +56,16 @@ class Board :
                     print("CountL Ya un NONE")
                     return False
                 countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
-            print("countL value :",countD)
-        
+            print("countD value :",countD)
 
+        if (line + column == 3):
+            for d in range(4) : 
+                if board.getGrid[d][d] == None :
+                    print("CountL Ya un NONE")
+                    return False  
+                countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
+            print("countD value :",countD)
+     
         if 0 in countD :
             print("0 detected")
             return True
