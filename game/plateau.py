@@ -49,30 +49,40 @@ class Board :
         return False
         
     def checkDiagonal(self, board, line, column) :
-        countD = [0,0,0,0]
+        countD1 = [0,0,0,0]
+        countD2 = [0,0,0,0]
         if line == column :
             for d in range(4) : 
                 if board.getGrid[d][d] == None :
-                    print("CountL Ya un NONE")
+                    print("CountD1 Ya un NONE")
                     return False
-                countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
-            print("countD value :",countD)
+                countD1 = np.add(countD1, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
+            print("countD1 value :",countD1)
+            if 0 in countD1 :
+                print("0 detected")
+                return True
+            if 4 in countD1 :
+                print("4 detected")
+                return True
+            return False
+     
 
         if (line + column == 3):
             for d in range(4) : 
-                if board.getGrid[d][d] == None :
-                    print("CountL Ya un NONE")
+                if board.getGrid[d][3-d] == None :
+                    print("CountD2 Ya un NONE")
                     return False  
-                countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
-            print("countD value :",countD)
-     
-        if 0 in countD :
-            print("0 detected")
-            return True
-        if 4 in countD :
-            print("4 detected")
-            return True
-        return False
+                countD2 = np.add(countD2, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
+            print("countD2 value :",countD2)
+            if 0 in countD1 :
+                print("0 detected")
+                return True
+            if 4 in countD1 :
+                print("4 detected")
+                return True
+            return False
+
+      
 
     def checkState(self,board, line, column) :
         """Vérifie si placer une pièce en x y fait terminer la game (vérifie ligne/colonne/diagonale)
@@ -95,42 +105,6 @@ class Board :
             return True
         else : 
             print("Diagonale pas gagnante")    
-
-        #TODO diagonale
-
-        """
-        VERIF SI LIGNE EST PLEINE ou non 
-        diagonale si line == column => diagonale  OU (0,3) (1,2) (2,1) (3,0) # trouver formule diagonale 
-
-        n - x
-        récupérer line column 
-        
-        piece = board[line][column]
-        piece.getInfo
-
-        On calcule et dès qu'on trouve un none on stop 
-        ou alors check si ya 4 valeurs # bof
-
-        CALCULE
-        
-        # 1ERE SOLUTION
-        piece (0,0) à la valeur 1111
-        1,0 / 2,0 /  3,0
-        si 1,0    a=0 b=1 c=1 d=1 alors on stop recherche sur a 
-        check_a = true
-        check b = true
- 
-        # 2EME SOLUTION GO SUR CA
-        on incrémente si True et lorsque on a un 4 ou 0 => WIN
-        ligne vide = [0,0,0,0]
-        if  0 in list or 4 in list : return True
-
-        colonne vide = [0,0,0,0]
-
-        diag dépends d'une cond
-
-
-        """
         return False
 
     def showGrid(self) :
