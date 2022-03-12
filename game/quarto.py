@@ -63,9 +63,10 @@ while gameON :
     board.showGrid()
 
     #TODO Faire la fct checkState
-    if board.checkState(board, positionX, positionY)  : 
-        print("Victoire du joueur ",player_turn)
-        gameON = False
+    if turn >3 :
+        if board.checkState(board, positionX, positionY)  : 
+            print("Victoire du joueur ",player_turn)
+            gameON = False
 
     if turn == 16 : #Jsp si c'est 16 ou autre
         print("PLUS DE PIECES DISPO!")
