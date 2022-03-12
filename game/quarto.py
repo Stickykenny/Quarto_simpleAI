@@ -19,6 +19,17 @@ while gameON :
     print("----------------------------\nTour ",turn,"\n----------------------------")
     print("Joueur ",player_turn,"doit sélectionner une pièce pour le Joueur ",(player_turn+1)%2)
     print("Avec quel pièce l'adversaire doit-il jouer ?")
+    print("-- Pièce disponible [id, valeur]: ")
+
+    print_iterator = 0
+    for x in (pieces_remained): 
+        if print_iterator == 3 :
+            print(x.getPieceInfo)
+        else :
+            print(x.getPieceInfo, end ='  ')
+        print_iterator = (print_iterator+1) % 4
+
+        
 
     chosenPiece = None
     choice = int(input("id de la piece [0-15]: "))
