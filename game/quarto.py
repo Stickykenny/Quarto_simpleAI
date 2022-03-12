@@ -59,10 +59,10 @@ while gameON :
     pieces_remained.remove(chosenPiece)
     print("\n \nAffichage après avoir déposé la pièce")
     board.showGrid()
-
-    if board.checkState(board, positionX, positionY)  : 
-        print("Victoire du joueur ",player_turn)
-        gameON = False
+    if turn>3:
+        if board.checkState(board, positionX, positionY)  : 
+            print("Victoire du joueur ",player_turn)
+            gameON = False
 
     if turn == 16 :
         print("PLUS DE PIECES DISPONIBLE!")
