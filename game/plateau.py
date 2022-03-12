@@ -16,7 +16,7 @@ class Board :
         countC = [0,0,0,0]
         for i in range(4) : 
             if board.getGrid[i][column] == None :
-                print("CountC Ya un NONE")
+                #print("CountC Ya un NONE")
                 return False
 
             countC = np.add(countC, Piece.getPiece(int(board.getGrid[i][column])).getPieceValue)  
@@ -34,7 +34,7 @@ class Board :
         countL = [0,0,0,0]
         for j in range(4) : 
             if board.getGrid[line][j] == None :
-                print("CountL Ya un NONE")
+                #print("CountL Ya un NONE")
                 return False
 
             countL = np.add(countL, Piece.getPiece(int(board.getGrid[line][j])).getPieceValue)  
@@ -54,7 +54,7 @@ class Board :
         if line == column :
             for d in range(4) : 
                 if board.getGrid[d][d] == None :
-                    print("CountD1 Ya un NONE")
+                    #print("CountD1 Ya un NONE")
                     return False
                 countD1 = np.add(countD1, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
             print("countD1 value :",countD1)
@@ -70,7 +70,7 @@ class Board :
         if (line + column == 3):
             for d in range(4) : 
                 if board.getGrid[d][3-d] == None :
-                    print("CountD2 Ya un NONE")
+                    #print("CountD2 Ya un NONE")
                     return False  
                 countD2 = np.add(countD2, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
             print("countD2 value :",countD2)
@@ -91,26 +91,33 @@ class Board :
         if board.checkColumn( board, line, column) :
             print("Colonne gagnante")
             return True
-        else : 
-            print("Colonne pas gagnante")
+        #else : 
+            #print("Colonne pas gagnante")
 
         if board.checkLine( board, line, column) :
             print("Ligne gagnante")
             return True
-        else : 
-            print("Ligne pas gagnante")
+        #else : 
+            #print("Ligne pas gagnante")
 
         if board.checkDiagonal( board, line, column) :
             print("Diagonale gagnante")
             return True
-        else : 
-            print("Diagonale pas gagnante")    
+        #else : 
+            #print("Diagonale pas gagnante")    
         return False
 
     def showGrid(self) :
         """Affiche la grille"""
         for i in range(len(self.board)) :
-            print(self.board[i])
+            tmp = []
+            for j in range(4) :
+                if self.board[i][j] != None :
+                    ind = int(self.board[i][j])
+                    tmp.append(Piece.getPiece(ind).getPieceInfo[1])
+                else :
+                    tmp.append('None')
+            print(tmp)
 
     @property
     def getGrid(self) :
@@ -121,16 +128,7 @@ class Board :
 """ 
 if __name__ == "__main__":
     print('This file "plateau.py"  is ran directly')
-    b= Board()
-    b.placerPiece(pieces[0], 0,0)
-    b.placerPiece(pieces[1], 0,1)
-    b.placerPiece(pieces[2], 0,2)
-    b.placerPiece(pieces[12], 0,3)
-    #15 0 13 9
-    b.showGrid()
-    b.checkState(b, 0, 0)
-    #piecesrestantes
-    #print(pieces[5].getPieceInfo)
+
 else:
     print('This file "quarto.py" was imported')  
 """

@@ -10,7 +10,7 @@ class Piece :
         size tall = True
         form square = True
         top hollow = True
-        TODO R2EXPLIQUER affichage
+        TODO REEXPLIQUER affichage
 
 
 
