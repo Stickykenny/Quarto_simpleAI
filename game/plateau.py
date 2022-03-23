@@ -3,11 +3,13 @@ import numpy as np
 class Board :
     def __init__(self) :
         self.board = [[None for i in range(4)] for j in range(4)]
+        self.available = [(a,b) for a in range(4) for b in range(4)]
 
     def placerPiece(self, piece,line,column) :
         # pblrm case dispo
         if self.board[line][column] == None: 
             self.board[line][column] = piece.id
+            self.available.remove((line,column))
             return True
         return False
 
@@ -20,13 +22,13 @@ class Board :
                 return False
 
             countC = np.add(countC, Piece.getPiece(int(board.getGrid[i][column])).getPieceValue)  
-        print("countC value :",countC)
+        #print("countC value :",countC)
 
         if 0 in countC :
-            print("0 detected")
+            #print("0 detected")
             return True
         if 4 in countC :
-            print("4 detected")
+            #print("4 detected")
             return True
         return False
 
@@ -38,13 +40,13 @@ class Board :
                 return False
 
             countL = np.add(countL, Piece.getPiece(int(board.getGrid[line][j])).getPieceValue)  
-        print("countL value :",countL)
+        #print("countL value :",countL)
 
         if 0 in countL :
-            print("0 detected")
+            #print("0 detected")
             return True
         if 4 in countL :
-            print("4 detected")
+            #print("4 detected")
             return True
         return False
         
@@ -57,7 +59,7 @@ class Board :
                     #print("CountD1 Ya un NONE")
                     return False
                 countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
-            print("countD1 value :",countD)
+            #print("countD1 value :",countD)
         
         if (line + column == 3):
             for d in range(4) : 
@@ -65,19 +67,17 @@ class Board :
                     #print("CountD2 Ya un NONE")
                     return False  
                 countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
-            print("countD2 value :",countD)
+            #print("countD2 value :",countD)
 
 
         if 0 in countD :
-            print("0 detected")
+            #print("0 detected")
             return True
         if 4 in countD :
-            print("4 detected")
+            #print("4 detected")
             return True
         return False
     
-
-
 
     def checkState(self,board, line, column) :
         """Vérifie si placer une pièce en x y fait terminer la game (vérifie ligne/colonne/diagonale)
@@ -119,6 +119,11 @@ class Board :
     def getGrid(self) :
         """Renvoi la grille"""
         return self.board
+
+    @property
+    def getAvailable(self) :
+        """Renvoi la grille"""
+        return self.available
 
 
 """ 
