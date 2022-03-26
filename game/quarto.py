@@ -13,8 +13,18 @@ turn = 1
 player_turn = 0
 
 #TODO Choose IA difficulty, make it a while
+
+
+print("1 - Difficulté Facile ")
+print("2 - Difficulté Modéré  ")
+print("3 - Difficulté Difficile  ")
+
 difficulty = int(input("Choississez la difficulté : "))
 
+while not(0< difficulty < 4):
+    print("Le niveau de diffuculté n'est pas valide...")
+    difficulty = int(input("Choississez la difficulté : "))
+    
 current_ai = AI(difficulty)
 
 play_order = random.randint(0,1)
