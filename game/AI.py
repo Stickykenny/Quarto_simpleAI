@@ -1,5 +1,6 @@
 import random
 import plateau
+import copy as cp
 class AI :
     def __init__(self, difficulty) :
         self.difficulty = difficulty
@@ -64,4 +65,19 @@ class AI :
         pass
 
     def sucessors(self , board):
-        pass
+        """
+        Return the set tuple (action, state) of all possibles boards
+        from the current board
+        action = (piece utilisé, ligne, colonne)
+        """
+        
+        case_to_test = board.getAvailable
+        result = []
+        for place in range(case_to_test):
+            tmp_board = cp.deepcopy(board)
+            for piece in tmp_board.getPieceRemained :
+                tmp_board.placerPiece(piece,place[0],place[1])
+                action = (piece,place[0],place[1])
+                result.append([action,tmp_board])
+
+        return result

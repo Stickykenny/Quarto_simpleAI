@@ -4,12 +4,14 @@ class Board :
     def __init__(self) :
         self.board = [[None for i in range(4)] for j in range(4)]
         self.available = [(a,b) for a in range(4) for b in range(4)]
+        self.pieces_remained = pieces.copy()
 
     def placerPiece(self, piece,line,column) :
         # pblrm case dispo
         if self.board[line][column] == None: 
             self.board[line][column] = piece.id
             self.available.remove((line,column))
+            self.pieces_remained.remove(piece)
             return True
         return False
 
@@ -122,14 +124,19 @@ class Board :
 
     @property
     def getAvailable(self) :
-        """Renvoi la grille"""
+        """Renvoi la liste des placement possible"""
+        #Example :
+        #[(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (2, 0), (2, 1), (2, 2), (2, 3), (3, 0), (3, 1), (3, 2), (3, 3)]
         return self.available
 
+    @property
+    def getPieceRemained(self) :
+        """Renvoi la grille"""
+        return self.pieces_remained
 
-""" 
+
 if __name__ == "__main__":
     print('This file "plateau.py"  is ran directly')
+    B = Board()
 
-else:
-    print('This file "quarto.py" was imported')  
-"""
+
