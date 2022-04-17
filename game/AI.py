@@ -31,25 +31,24 @@ class AI :
 
     def miniMax(self, board, depth) :
         #return the a in Action(state) maximaxing Min_value(result(a,state))
+
         pass
 
     def maxValue(self, board,depth) :
         if depth <= 0 :
             return self.evalValue(board)
-        v = float("-inf")
-        for a,s in self.sucessors() :
-            v = max(v, self.minValue(s))
-        return v
-        pass
+        value = float("-inf")
+        for actionSet,newBoard in self.sucessors() :
+            value = max(value, self.minValue(newBoard, depth-1)[0])
+        return value, actionSet
 
     def minValue(self, board,depth) :
         if depth <= 0 :
             return -self.evalValue(board)
-        v = float("inf")
-        for a,s in self.sucessors() :
-            v = max(v, self.maxValue(s))
-        return v
-        pass
+        value = float("inf")
+        for actionSet,newBoard in self.sucessors() :
+            value = max(value, self.maxValue(newBoard, depth-1)[0])
+        return value, actionSet
 
     def evalValue(self, board, line, column):
 
@@ -60,7 +59,9 @@ class AI :
 
         #here calculate eval 
         g = board.getGrid
+        value = 10
         for i in range(4):
+            
             pass
         pass
 
@@ -74,10 +75,12 @@ class AI :
         case_to_test = board.getAvailable
         result = []
         for place in range(case_to_test):
-            tmp_board = cp.deepcopy(board)
             for piece in tmp_board.getPieceRemained :
+                tmp_board = cp.deepcopy(board)
                 tmp_board.placerPiece(piece,place[0],place[1])
                 action = (piece,place[0],place[1])
                 result.append([action,tmp_board])
 
+        #result = [  (used_piece, line, column) , [grid_obtained] ,  (used_piece, line, column) , [grid_obtained], ... ]
+        print("action possible :",result)
         return result

@@ -107,14 +107,16 @@ class Board :
 
     def showGrid(self) :
         """Affiche la grille"""
+        print("      _\   0   |   1   |   2   |   3   |")
         for i in range(len(self.board)) :
+            print("  ",i,end="  _ ")
             tmp = []
             for j in range(4) :
                 if self.board[i][j] != None :
                     ind = int(self.board[i][j])
                     tmp.append(Piece.getPiece(ind).getPieceInfo[1])
                 else :
-                    tmp.append('None')
+                    tmp.append('    ')
             print(tmp)
 
     @property
@@ -134,9 +136,40 @@ class Board :
         """Renvoi la grille"""
         return self.pieces_remained
 
+    @property
+    def getLinesToCheck(self) :
+        """Renvoi l'ensemble des lignes que le jeu doit vérifier"""
+        result = []
+        line = []
+        column,column1,column2,column3,column4 = ([] for i in range(5))
+        diagonal,diag,antidiag = ([] for i in range(3))
+        for i in range(4):
+            line.append(self.getGrid[i])
+            column1.append(self.getGrid[i][0])
+            column2.append(self.getGrid[i][1])
+            column3.append(self.getGrid[i][2])
+            column4.append(self.getGrid[i][3])
+            diag.append(self.getGrid[i][i])
+            antidiag.append(self.getGrid[3-i][i])
+        diagonal.append(diag)
+        diagonal.append(antidiag)
+        for concat in [column1,column2,column3,column4] :
+            column.append(concat)
+        result = line +column + diagonal
+        return result
+import time
 
 if __name__ == "__main__":
+    start_time = time.time()
     print('This file "plateau.py"  is ran directly')
     B = Board()
-
+    #print(B.getGrid)
+    B.placerPiece(pieces[0],0,0)
+    B.placerPiece(pieces[1],1,1)
+    B.placerPiece(pieces[2],2,2)
+    B.placerPiece(pieces[3],3,3)
+    B.placerPiece(pieces[5],1,2)
+    print(B.getLinesToCheck)
+    B.showGrid()
+    print("--- %s seconds ---" % (time.time() - start_time))
 
