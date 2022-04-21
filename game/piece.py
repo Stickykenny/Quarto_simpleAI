@@ -36,6 +36,10 @@ class Piece :
     def getPiece(id) :
         return pieces[id]
 
+    def __str__(self) -> str:
+        return ""+self.affichage
+        pass
+
 
 
 

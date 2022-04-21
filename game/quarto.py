@@ -20,17 +20,19 @@ print("3 - Difficulté Difficile  ")
 
 difficulty = int(input("Choississez la difficulté : "))
 
-while not(0< difficulty < 4):
+while not(0<= difficulty < 4):
     print("Le niveau de diffuculté n'est pas valide...")
     difficulty = int(input("Choississez la difficulté : "))
     
 current_ai = AI(difficulty)
 
-play_order = random.randint(0,1)
+play_order = 1#random.randint(0,1)
 if play_order == 0: #Equivalent à un False
     print("L' Intelligence Artificiel commence en premier")
 else : 
     print("Le Joueur comence en premier")
+
+board.showGrid()
 
 while gameON :
     #TODO print different for player 2 ?
@@ -93,7 +95,7 @@ while gameON :
     print(" \nAffichage après avoir déposé la pièce")
     board.showGrid()
     if turn>3:
-        if board.checkState(board, positionX, positionY)  : 
+        if board.checkState(positionX, positionY)  : 
             if not(play_order) :
                 print("Victoire du joueur !")
             else : 
@@ -112,3 +114,4 @@ while gameON :
 
 
 
+x = input("Press enter to close the game")

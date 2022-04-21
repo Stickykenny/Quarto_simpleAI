@@ -16,14 +16,14 @@ class Board :
         return False
 
 
-    def checkColumn(self, board, line, column) :
+    def checkColumn(self, line, column) :
         countC = [0,0,0,0]
         for i in range(4) : 
-            if board.getGrid[i][column] == None :
+            if self.getGrid[i][column] == None :
                 #print("CountC Ya un NONE")
                 return False
 
-            countC = np.add(countC, Piece.getPiece(int(board.getGrid[i][column])).getPieceValue)  
+            countC = np.add(countC, Piece.getPiece(int(self.getGrid[i][column])).getPieceValue)  
         #print("countC value :",countC)
 
         if 0 in countC :
@@ -34,14 +34,14 @@ class Board :
             return True
         return False
 
-    def checkLine(self, board, line, column) :
+    def checkLine(self, line, column) :
         countL = [0,0,0,0]
         for j in range(4) : 
-            if board.getGrid[line][j] == None :
+            if self.getGrid[line][j] == None :
                 #print("CountL Ya un NONE")
                 return False
 
-            countL = np.add(countL, Piece.getPiece(int(board.getGrid[line][j])).getPieceValue)  
+            countL = np.add(countL, Piece.getPiece(int(self.getGrid[line][j])).getPieceValue)  
         #print("countL value :",countL)
 
         if 0 in countL :
@@ -52,23 +52,23 @@ class Board :
             return True
         return False
         
-    def checkDiagonal(self, board, line, column) :
+    def checkDiagonal(self, line, column) :
         countD = [0,0,0,0]
 
         if line == column :
             for d in range(4) : 
-                if board.getGrid[d][d] == None :
+                if self.getGrid[d][d] == None :
                     #print("CountD1 Ya un NONE")
                     return False
-                countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][d])).getPieceValue)
+                countD = np.add(countD, Piece.getPiece(int(self.getGrid[d][d])).getPieceValue)
             #print("countD1 value :",countD)
         
         if (line + column == 3):
             for d in range(4) : 
-                if board.getGrid[d][3-d] == None :
+                if self.getGrid[d][3-d] == None :
                     #print("CountD2 Ya un NONE")
                     return False  
-                countD = np.add(countD, Piece.getPiece(int(board.getGrid[d][3-d])).getPieceValue)    
+                countD = np.add(countD, Piece.getPiece(int(self.getGrid[d][3-d])).getPieceValue)    
             #print("countD2 value :",countD)
 
 
@@ -81,25 +81,25 @@ class Board :
         return False
     
 
-    def checkState(self,board, line, column) :
+    def checkState(self, line, column) :
         """Vérifie si placer une pièce en x y fait terminer la game (vérifie ligne/colonne/diagonale)
         Retourne Vrai quand ca gagne"""
 
-        if board.checkColumn( board, line, column) :
-            print("Colonne gagnante")
+        if self.checkColumn( line, column) :
+            #print("Colonne gagnante")
             return True
         #else : 
             #print("Colonne pas gagnante")
 
-        if board.checkLine( board, line, column) :
-            print("Ligne gagnante")
+        if self.checkLine( line, column) :
+            #print("Ligne gagnante")
             return True
         #else : 
             #print("Ligne pas gagnante")
             
         if (line == column or (line + column == 3)) :
-            if board.checkDiagonal( board, line, column) :
-                print("Diagonale gagnante")
+            if self.checkDiagonal(line, column) :
+                #print("Diagonale gagnante")
                 return True
             #else : 
                 #print("Diagonale pas gagnante")    
