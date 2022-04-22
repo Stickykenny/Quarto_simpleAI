@@ -1,20 +1,27 @@
 from piece import *
 import numpy as np
+import copy
 class Board :
     def __init__(self) :
         self.board = [[None for i in range(4)] for j in range(4)]
         self.available = [(a,b) for a in range(4) for b in range(4)]
-        self.pieces_remained = pieces.copy()
+        self.pieces_remained = [ i for i in range (16)]
 
     def placerPiece(self, piece,line,column) :
         # pblrm case dispo
         if self.board[line][column] == None: 
             self.board[line][column] = piece.id
             self.available.remove((line,column))
-            self.pieces_remained.remove(piece)
+            self.pieces_remained.remove(int(piece.id))
             return True
         return False
 
+
+    def getPiece(self,id) :
+        for p in pieces:
+            if int(p.id)  == int(id):
+                return p
+        assert Exception("Piece not found",id)
 
     def checkColumn(self, line, column) :
         countC = [0,0,0,0]
@@ -157,6 +164,21 @@ class Board :
             column.append(concat)
         result = line +column + diagonal
         return result
+    
+    def checkWin(self):
+        toCheck = self.getLinesToCheck
+        for line in toCheck :
+            count = [0,0,0,0]
+            if None not in line :
+                for i in range(4):
+                    count = np.add(count, self.getPiece(line[i]).getPieceValue)
+                if 0 in count or 4 in count :
+                    print(count)
+                    return True
+        return False
+
+
+
 import time
 
 if __name__ == "__main__":
@@ -164,12 +186,14 @@ if __name__ == "__main__":
     print('This file "plateau.py"  is ran directly')
     B = Board()
     #print(B.getGrid)
-    B.placerPiece(pieces[0],0,0)
-    B.placerPiece(pieces[1],1,1)
-    B.placerPiece(pieces[2],2,2)
-    B.placerPiece(pieces[3],3,3)
-    B.placerPiece(pieces[5],1,2)
-    print(B.getLinesToCheck)
+    B.placerPiece(Piece.getPiece(1),0,0)
+    B.placerPiece(Piece.getPiece(2),1,1)
+    B.placerPiece(Piece.getPiece(9),2,2)
+    B.placerPiece(Piece.getPiece(4),3,3)
+    B.placerPiece(Piece.getPiece(5),1,2)
+    #print(B.getGrid)
+    #print(B.getLinesToCheck)
+    print(B.checkWin())
     B.showGrid()
     print("--- %s seconds ---" % (time.time() - start_time))
 

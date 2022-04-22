@@ -35,10 +35,9 @@ else :
 board.showGrid()
 
 while gameON :
-    #TODO print different for player 2 ?
     print("----------------------------\nTour ",turn,"\n----------------------------")
     
-    # CHoix de la pièce
+    # Choix de la pièce
     if play_order :
 
         print("Vous devez sélectionner une pièce pour l'IA ")
@@ -48,30 +47,30 @@ while gameON :
         print_iterator = 0
         for x in (board.getPieceRemained): 
             if print_iterator == 3 :
-                print(x.getPieceInfo)
+                print(Piece.getPiece(x).getPieceInfo)
             else :
-                print(x.getPieceInfo, end ='  ')
+                print(Piece.getPiece(x).getPieceInfo, end ='  ')
             print_iterator = (print_iterator+1) % 4
 
         chosenPiece = None
-        choice = int(input("\nid de la piece [0-15]: "))
+        choice = int(input("\nid de la piece [0-15] : "))
 
-        while not(-1< choice < 16) or (chosenPiece not in board.getPieceRemained): 
+        while not(-1< choice < 16) or (choice not in board.getPieceRemained): 
             if not(-1< choice < 16) :
                 print("L'id selectionné n'est pas valide...")
                 choice = int(input("id de la piece [0-15]: "))
                 continue
-            chosenPiece = Piece.getPiece(choice)
-            if chosenPiece not in board.getPieceRemained :
+            if choice not in board.getPieceRemained :
                 print("La piece choisi n'est plus disponible...")
                 choice = int(input("id de la piece [0-15]: "))
                 continue
+        chosenPiece = board.getPiece(choice)
 
     else :
-        chosenPiece = current_ai.choosePiece(board, board.getPieceRemained)
+        chosenPiece = current_ai.choosePiece(board)
         print("L'IA vous a choisi la pièce : ",chosenPiece.getPieceInfo)
         print("Veuillez choisir la case où vous voulez déposer la piece")
-
+    print(chosenPiece)
     #Choix du placement 
     if not(play_order) :
         inputcorrect = False
@@ -92,6 +91,8 @@ while gameON :
         board.placerPiece(chosenPiece, position[0], position[1])
         print("L'IA à placer la pièce en (",position[0],",",position[1],")")
     
+
+    #End of turn
     print(" \nAffichage après avoir déposé la pièce")
     board.showGrid()
     if turn>3:
