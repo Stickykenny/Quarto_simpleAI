@@ -17,7 +17,7 @@ class AI :
 
         if self.difficulty == 2 :
             #TODO
-            
+            #return board.getPiece(self.chooseWorstPiece(board))
             return board.getPiece(random.choice(board.getPieceRemained))
 
     def chooseWorstPiece(self, board):
@@ -33,7 +33,7 @@ class AI :
                     if i == None :
                         continue
                     pieceValues = board.getPiece(i).getPieceValue
-                    #print("pv",pieceValues)
+                    print("pv",pieceValues)
                     for j in range(len(pieceValues)) :
                         intJ = int(j)
                         if pieceValues[intJ] == 1:
@@ -41,17 +41,20 @@ class AI :
                         else :
                             points[0][intJ] += 1
 
+        print(points)
+        print("===============points======================")
         worstPieceID = possible[0]
         worstValue = float("inf")
         for p in possible :
             current = bin(p)[2:].zfill(4)
-            #print("cur",current)
+            print("cur",current)
             currentValue = 0
             for i in current :
                 if i == "0" :
                     currentValue += points[0][int(i)]
                 else : 
                     currentValue += points[1][int(i)]
+            print(currentValue)
             if worstValue > currentValue :
                 print("changed ",worstPieceID, "to this :",p)
                 worstPieceID = p
@@ -68,8 +71,8 @@ class AI :
 
         if self.difficulty == 2 :
             #TODO
-            actionSet = self.miniMax(board,piece, 1)
-            print("Action choisi par IA : ",actionSet)
+            actionSet = self.miniMax(board,piece, 2)
+            #print("Action choisi par IA : ",actionSet)
             return (actionSet[1],actionSet[2])
             #return random.choice(board.getAvailable)
 
@@ -87,7 +90,7 @@ class AI :
         if depth <= 0 :
             return self.evalValue(board), None
         bestValue = float("-inf")
-        #bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
+        bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         for actionSet,nextBoard in self.successors(board, piece) :
             currentMin = self.minValue(nextBoard, depth-1)
             #print(actionSet, str(actionSet[0]))
@@ -96,27 +99,29 @@ class AI :
             #print("best :",bestValue)
             #print(currentValue)
             if bestValue < currentValue:
-                print("got replaced in maxValue")
+                #print("got replaced in maxValue")
                 bestValue = currentValue
                 bestAction = actionSet
-        print(bestAction)        
+        #print(bestAction)        
         return bestValue, bestAction
 
     def minValue(self, board,depth,piece = None) :
         if depth <= 0 or len(board.getPieceRemained) == 0:
             return -self.evalValue(board), None
         bestValue = float("inf")
-        #bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
+        bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         for actionSet,nextBoard in self.successors(board,piece) :
-            currentMax = self.minValue(nextBoard, depth-1)
+            currentMax = self.maxValue(nextBoard, depth-1)
             #print(actionSet, str(actionSet[0]))
             #print("current max",currentMax)
             currentValue = currentMax[0]
             if bestValue > currentValue:
-                print("got replaced in minValue")
+                #print("got replaced in minValue")
                 bestValue = currentValue
                 bestAction = actionSet
-        print(bestAction)     
+                #bb = nextBoard
+        #print("BESTBEST ===========",bestValue, bestAction)  
+        #bb.showGrid()   
         return bestValue, bestAction
 
     def evalValue(self, board):
@@ -124,12 +129,14 @@ class AI :
         """
         TODO MAKE A PROPER EVAL TEST
         """
+        #Evaluate the board for the next turn
+
 
         #Case : Victory on this board
         #board.showGrid()
         if board.checkWin() :
-            print("got to eval float")
-            return float("inf")
+            #print("got to eval float")
+            return 1000
 
 
         #here calculate eval 
@@ -137,19 +144,19 @@ class AI :
         value = 0
         for lines in board.getLinesToCheck : 
             countNone = 0
+            addvalue = 0
             for i in range(4):
                 if lines[i] == None :
                     countNone += 1            
             if countNone == 1 : #y'a 1 case vide pour win et j'veux pas que l'ennemy la
-                addvalue = 30
+                addvalue = -30
             if countNone == 2 :
                 addvalue = 20
             if countNone == 3 :
-                addvalue = 10
+                addvalue = -10
             if countNone == 4 :
-                addvalue = 5
+                addvalue = -1
             value += addvalue
-        #print(value)
         return value
 
     def successors(self , board, pieceGiven = None):
@@ -161,7 +168,7 @@ class AI :
         
         emptyCase = board.getAvailable
         result = []
-        print("givenpiece : ",pieceGiven)
+        #print("givenpiece : ",pieceGiven)
         for place in (emptyCase):
             tmp_board = cp.deepcopy(board)
             

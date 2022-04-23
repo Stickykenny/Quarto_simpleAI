@@ -173,7 +173,7 @@ class Board :
                 for i in range(4):
                     count = np.add(count, self.getPiece(line[i]).getPieceValue)
                 if 0 in count or 4 in count :
-                    print(count)
+                    #print(count)
                     return True
         return False
 
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     B.placerPiece(Piece.getPiece(4),3,3)
     B.placerPiece(Piece.getPiece(5),1,2)
     #print(B.getGrid)
-    #print(B.getLinesToCheck)
+    print(B.getLinesToCheck)
     print(B.checkWin())
     B.showGrid()
     print("--- %s seconds ---" % (time.time() - start_time))
