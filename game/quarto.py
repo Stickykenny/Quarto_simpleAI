@@ -70,7 +70,7 @@ while gameON :
         chosenPiece = current_ai.choosePiece(board)
         print("L'IA vous a choisi la pièce : ",chosenPiece.getPieceInfo)
         print("Veuillez choisir la case où vous voulez déposer la piece")
-    print(chosenPiece)
+    #print(chosenPiece)
     #Choix du placement 
     if not(play_order) :
         inputcorrect = False
@@ -87,9 +87,9 @@ while gameON :
             else :
                 print("Veuillez selectionner une case disponible...")
     else :
-        position = current_ai.choosePosition(board,chosenPiece)
-        board.placerPiece(chosenPiece, position[0], position[1])
-        print("L'IA à placer la pièce en (",position[0],",",position[1],")")
+        positionX, positionY = current_ai.choosePosition(board,chosenPiece)
+        board.placerPiece(chosenPiece, positionX, positionY)
+        print("L'IA à placer la pièce en (",positionX,",",positionY,")")
     
 
     #End of turn
