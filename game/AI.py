@@ -64,29 +64,46 @@ class AI :
         print("returned this piece :",worstPieceID, " / with value of :",worstValue)
         return worstPieceID
 
-    def choosePosition(self, board, piece) : 
+    def choosePosition(self, board, piece, turn) : 
         if self.difficulty == 0 :
             return board.getAvailable[0]
 
         if self.difficulty == 1 :
             return random.choice(board.getAvailable)
+            #Il veut gagner si il le voit direct
 
         if self.difficulty == 2 :
+            #Profondeur 2
+            #+ choix de la pièce un peu random 3/4 
             #TODO
-            actionSet = self.miniMax(board,piece, 3)
+
+            if turn == 1 :
+                return random.choice(board.getAvailable)
+            if turn <=4 :
+                actionSet = self.miniMax(board,piece, 2)
+                return (actionSet[1],actionSet[2])
+            actionSet = self.miniMax(board,piece, 4)
+
+        
+
             #print("Action choisi par IA : ",actionSet)
             return (actionSet[1],actionSet[2])
             #return random.choice(board.getAvailable)
+        if self.difficulty == 3 :
+            #Profondeur 3-4
+            # choix de la pièce 100% FDP
+            #TODO
+            pass
 
 
     def miniMax(self, board,piece, depth) :
         #return the a in Action(state) maximaxing Min_value(result(a,state))
-        v ,actionSet = self.maxValue(board,depth, piece)
+        v ,actionSet = self.maxValue(board,depth,alpha=float("-inf"), beta=float("inf"),piece=piece)
         return actionSet
 
         pass
 
-    def maxValue(self, board,depth,piece = None) :
+    def maxValue(self, board,depth,alpha, beta,piece = None) :
         if len(board.getPieceRemained) == 0:
             return -self.evalValue(board, depth), None
         if depth <= 0 :
@@ -95,7 +112,7 @@ class AI :
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         #print(depth)
         for actionSet,nextBoard in self.successors(board, piece) :
-            currentMin = self.minValue(nextBoard, depth-1)
+            currentMin = self.minValue(nextBoard, depth-1,alpha, beta)
             #print(actionSet, str(actionSet[0]))
             #print("current min",currentMin)
             currentValue = currentMin[0]
@@ -105,17 +122,20 @@ class AI :
                 #print("got replaced in maxValue")
                 bestValue = currentValue
                 bestAction = actionSet
+            if bestValue >= beta :
+                return bestValue, bestAction
+            alpha = max(alpha,bestValue)
         #print(bestAction)        
         return bestValue, bestAction
 
-    def minValue(self, board,depth,piece = None) :
+    def minValue(self, board,depth,alpha, beta,piece = None) :
         if depth <= 0 or len(board.getPieceRemained) == 0:
-            return self.evalValue(board, depth), None
+            return -self.evalValue(board, depth), None
         bestValue = float("inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         #print(depth)
         for actionSet,nextBoard in self.successors(board,piece) :
-            currentMax = self.maxValue(nextBoard, depth-1)
+            currentMax = self.maxValue(nextBoard, depth-1,alpha, beta)
             #print(actionSet, str(actionSet[0]))
             #print("current max",currentMax)
             currentValue = currentMax[0]
@@ -123,7 +143,9 @@ class AI :
                 #print("got replaced in minValue")
                 bestValue = currentValue
                 bestAction = actionSet
-                bb = nextBoard
+            if bestValue >= alpha :
+                return bestValue, bestAction
+            beta = max(beta,bestValue)
         #print("BESTBEST ===========",bestValue, bestAction)  
         #bb.showGrid()   
         return bestValue, bestAction
@@ -135,17 +157,18 @@ class AI :
         """
         #Evaluate the board for the next turn
 
-        if board.checkWin() :
-            if depth %2 == 0 :
-            #print("got to eval float")
-                return -99999999999999999999999
-            else : 
-                return 99999999999999999999999
+        #if board.checkWin() :
+        #    if depth %2 == 0 :
+        #    #print("got to eval float")
+        #        return -99999999999999999999999
+        #    else : 
+        #        return 99999999999999999999999
 
         #Case : Victory on this board
         #board.showGrid()
         if board.checkWin() :
             #print("got to eval float")
+            #POSITIF
             return 99999999999999999999999
 
 
@@ -161,15 +184,17 @@ class AI :
             if countNone == 1 : #y'a 1 case vide pour win et j'veux pas que l'ennemy la
                 addvalue = -4000
             if countNone == 2 :
-                addvalue = 200
+                addvalue = 50
             if countNone == 3 :
-                addvalue = -10
-            if countNone == 4 :
-                addvalue = -1
+                addvalue = 100
+            if countNone == 4 : #On veut garder le plus de ligne rempli de None
+                addvalue = 200
         
             #if countNone == 0 :
             #    addvalue = -10
             value += addvalue
+        #board.showGrid()
+        #print(value)
         return value
 
     def successors(self , board, pieceGiven = None):
@@ -186,6 +211,7 @@ class AI :
             tmp_board = cp.deepcopy(board)
             
             if pieceGiven != None :
+                #print("entrered !=None")
                 #print((str(pieceGiven),place[0],place[1]))
                 piece = pieceGiven#board.getPiece(pieceGiven)
                 tmp_board.placerPiece(piece,place[0],place[1])
@@ -193,8 +219,13 @@ class AI :
                 result.append([action,tmp_board])
             else :
                 for piece in tmp_board.getPieceRemained :
-                    #print((str(piece),place[0],place[1]))
-                    tmp_board.placerPiece(board.getPiece(piece),place[0],place[1])
+                    tmp_board = cp.deepcopy(board)
+                    #print((piece,place[0],place[1]))
+                    #print(tmp_board.getPiece(piece))
+                    #print(tmp_board.getPiece(piece).id)
+                    tmp_board.placerPiece(tmp_board.getPiece(piece),place[0],place[1])
+                    #print(tmp_board.getGrid)
+                    #tmp_board.showGrid()
                     action = (piece,place[0],place[1])
                     result.append([action,tmp_board])
 
