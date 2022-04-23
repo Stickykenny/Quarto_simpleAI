@@ -9,7 +9,11 @@ class Board :
 
     def placerPiece(self, piece,line,column) :
         # pblrm case dispo
-        if self.board[line][column] == None: 
+        #print("place here instead of ",self.board)
+        #print(self.board[line])
+        #print(self.board[line][column])
+        #print(piece.id)
+        if self.board[line][column] == None : 
             self.board[line][column] = piece.id
             self.available.remove((line,column))
             self.pieces_remained.remove(int(piece.id))
