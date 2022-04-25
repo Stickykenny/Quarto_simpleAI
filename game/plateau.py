@@ -8,11 +8,6 @@ class Board :
         self.pieces_remained = [ i for i in range (16)]
 
     def placerPiece(self, piece,line,column) :
-        # pblrm case dispo
-        #print("place here instead of ",self.board)
-        #print(self.board[line])
-        #print(self.board[line][column])
-        #print(piece.id)
         if self.board[line][column] == None : 
             self.board[line][column] = piece.id
             self.available.remove((line,column))
@@ -92,10 +87,12 @@ class Board :
         return False
     
 
-    def checkState(self, line, column) :
+    def checkState(self, line, column, piece = None) :
         """Vérifie si placer une pièce en x y fait terminer la game (vérifie ligne/colonne/diagonale)
         Retourne Vrai quand ca gagne"""
 
+        if piece != None :
+            self.placerPiece( piece,line,column)
         if self.checkColumn( line, column) :
             #print("Colonne gagnante")
             return True

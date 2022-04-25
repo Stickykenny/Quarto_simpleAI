@@ -1,4 +1,6 @@
 import random
+
+from pyparsing import WordStart
 from piece import Piece
 import plateau
 import copy as cp
@@ -9,89 +11,121 @@ class AI :
 
     def choosePiece(self, board) : 
         if self.difficulty == 0 :
-            #print(board.getPieceRemained[0])
-            return board.getPiece(self.chooseWorstPiece(board))
+            print(board.getPieceRemained[0])
 
         if self.difficulty == 1 :
             return board.getPiece(random.choice(board.getPieceRemained))
 
         if self.difficulty == 2 :
-            #TODO
-            #return board.getPiece(self.chooseWorstPiece(board))
-            return board.getPiece(random.choice(board.getPieceRemained))
+            winning, notwinning = self.getListWinLose(board)
+            
+            if len(winning) == 0:
+                return (board.getPiece(random.choice(notwinning)))
+            if len(notwinning) == 0:
+                return (board.getPiece(random.choice(winning)))
 
-    def chooseWorstPiece(self, board):
+            if random.uniform(0, 1)> 0.75 :
+                #print("gave a winning piece")
+                return  (board.getPiece(random.choice(winning)))
+            else :
+                return  (board.getPiece(random.choice(notwinning)))
+
+
+        if self.difficulty == 3 :
+            winning, notwinning = self.getListWinLose(board)
+            if len(notwinning) == 0:
+                return (board.getPiece(random.choice(winning)))
+            return (board.getPiece(random.choice(notwinning)))
+
+
+    def getListWinLose(self, board):
         toCheck = board.getLinesToCheck
         possible = board.getPieceRemained
-
+        winningList = []
+    
         # points = nb d'occurence d'un attribut sur le plateau et dont il est possible d'en profiter
         # points =  [ [occurence de valeur 0] ,  [occurence de valeur 1]  ]
-        points = [[0,0,0,0],[0,0,0,0]]
-        print(toCheck)
+        #print(toCheck)
         for line in toCheck :
+            cur_points = [0,0,0,0]
             if None in line :
-                print(line)
+                #print("visiting this",line)
+                countNone = 0
+                
                 for i in range(4):
-                    if i == None :
+                    if line[i] == None :
+                        countNone += 1
                         continue
-                    pieceValues = board.getPiece(i).getPieceValue
-                    print("pv",pieceValues)
+                    pieceValues = board.getPiece(line[i]).getPieceValue
+                    #print("pv",pieceValues)
                     for j in range(len(pieceValues)) :
                         intJ = int(j)
                         if pieceValues[intJ] == 1:
-                            points[1][intJ] += 1
-                        else :
-                            points[0][intJ] += 1
+                            cur_points[intJ] += 1
+                #print("this line with 3 pieces has points ;", cur_points)
 
-        print(points)
-        print("===============points======================")
-        worstPieceID = possible[0]
-        worstValue = float("inf")
-        for p in possible :
-            current = bin(p)[2:].zfill(4)
-            print("cur",current)
-            currentValue = 0
-            for i in current :
-                if i == "0" :
-                    currentValue += points[0][int(i)]
-                else : 
-                    currentValue += points[1][int(i)]
-            print(currentValue)
-            if worstValue > currentValue :
-                print("changed ",worstPieceID, "to this :",p)
-                worstPieceID = p
-                worstValue = currentValue
-        print("returned this piece :",worstPieceID, " / with value of :",worstValue)
-        return worstPieceID
+                #Check all piece in possible winning place  
+                
+                if countNone == 1 :
+                    for p in possible :
+                        points= cp.deepcopy(cur_points)
+                        #print("deepcopy",points)
+                        #print(p)
+                        piece =  board.getPiece(p).getPieceValue
+                        #print(piece)
+                        for u in range(4) :
+                            if piece[u] == 1:
+                                points[u] += 1       
+                        #print("value of this line  ",points) 
+                        if 4 in points or 0 in points :
+
+                            #print("cette pièce est gagnante",piece)
+                            #print(winningList)
+                            #print(possible)
+                            winningList.append(p)
+                            #possible.remove(piece)
+                            #print("remove done")
+                    
+
+        # winningList , notwinningList
+        notwinningList = [item for item in possible if item not in winningList]
+        #print(winningList,"\nk",notwinningList)
+        return winningList, notwinningList
+
 
     def choosePosition(self, board, piece, turn) : 
         if self.difficulty == 0 :
             return board.getAvailable[0]
 
         if self.difficulty == 1 :
+            v, actionSet = self.miniMax(board,piece, 1)
+            #print("v value", v)
+            if v == 1000000 :
+                #print("ct positif")
+                #print(actionSet)
+                return (actionSet[1],actionSet[2])
             return random.choice(board.getAvailable)
             #Il veut gagner si il le voit direct
 
         if self.difficulty == 2 :
-            #Profondeur 2
-            #+ choix de la pièce un peu random 3/4 
-            #TODO
 
             if turn == 1 :
                 return random.choice(board.getAvailable)
-            if turn <=4 :
-                actionSet = self.miniMax(board,piece, 2)
-                return (actionSet[1],actionSet[2])
-            actionSet = self.miniMax(board,piece, 4)
-
-        
-
-            #print("Action choisi par IA : ",actionSet)
+            actionSet = self.miniMax(board,piece, 2)[1]
             return (actionSet[1],actionSet[2])
-            #return random.choice(board.getAvailable)
+            
         if self.difficulty == 3 :
-            #Profondeur 3-4
-            # choix de la pièce 100% FDP
+            if turn == 1 :
+                return random.choice(board.getAvailable)
+            if turn <=4 :
+                actionSet = self.miniMax(board,piece, 2)[1]
+                return (actionSet[1],actionSet[2])
+            if turn <=7 :
+                actionSet = self.miniMax(board,piece, 3)[1]
+                return (actionSet[1],actionSet[2])
+            else :
+                actionSet = self.miniMax(board,piece, 4)[1]
+                return (actionSet[1],actionSet[2])
             #TODO
             pass
 
@@ -99,7 +133,7 @@ class AI :
     def miniMax(self, board,piece, depth) :
         #return the a in Action(state) maximaxing Min_value(result(a,state))
         v ,actionSet = self.maxValue(board,depth,alpha=float("-inf"), beta=float("inf"),piece=piece)
-        return actionSet
+        return v, actionSet
 
         pass
 
@@ -150,7 +184,7 @@ class AI :
         #bb.showGrid()   
         return bestValue, bestAction
 
-    def evalValue(self, board,depth):
+    def evalValue(self, board,depth, comportement = 3):
 
         """
         TODO MAKE A PROPER EVAL TEST
@@ -167,32 +201,55 @@ class AI :
         #Case : Victory on this board
         #board.showGrid()
         if board.checkWin() :
-            #print("got to eval float")
+            #print("win trouvé")
+            #board.showGrid()
             #POSITIF
-            return 99999999999999999999999
+            return -1000000
 
 
         #here calculate eval 
         g = board.getGrid
         value = 0
-        for lines in board.getLinesToCheck : 
-            countNone = 0
-            addvalue = 0
-            for i in range(4):
-                if lines[i] == None :
-                    countNone += 1            
-            if countNone == 1 : #y'a 1 case vide pour win et j'veux pas que l'ennemy la
-                addvalue = -4000
-            if countNone == 2 :
-                addvalue = 50
-            if countNone == 3 :
-                addvalue = 100
-            if countNone == 4 : #On veut garder le plus de ligne rempli de None
-                addvalue = 200
         
-            #if countNone == 0 :
-            #    addvalue = -10
-            value += addvalue
+        if comportement == 2 :
+            
+            for lines in board.getLinesToCheck : 
+                countNone = 0
+                addvalue = 0
+                for i in range(4):
+                    if lines[i] == None :
+                        countNone += 1            
+                if countNone == 1 : #y'a 1 case vide pour win et j'veux pas que l'ennemy la
+                    addvalue = -400
+                if countNone == 2 :
+                    addvalue = 50
+                if countNone == 3 :
+                    addvalue = 100
+                if countNone == 4 : #On veut garder le plus de ligne rempli de None
+                    addvalue = 200
+                value += addvalue
+
+        if comportement == 3 :
+            #Cherche à disperser le plus
+            for lines in board.getLinesToCheck : 
+                countNone = 0
+                addvalue = 0
+                for i in range(4):
+                    if lines[i] == None :
+                        countNone += 1      
+                if countNone == 0 :
+                    addvalue = -2    
+                if countNone == 1 :
+                    addvalue = -4
+                if countNone == 2 :
+                    addvalue = -6
+                if countNone == 3 :
+                    addvalue = -8
+                if countNone == 4 :
+                    addvalue = -10
+                value += addvalue
+
+
         #board.showGrid()
         #print(value)
         return value
