@@ -17,7 +17,7 @@ class AI :
             return board.getPiece(random.choice(board.getPieceRemained))
 
         if self.difficulty == 2 :
-            winning, notwinning = self.getListWinLose(board)
+            winning, notwinning = self.getListWinNeutral(board)
             
             if len(winning) == 0:
                 return (board.getPiece(random.choice(notwinning)))
@@ -32,13 +32,13 @@ class AI :
 
 
         if self.difficulty == 3 :
-            winning, notwinning = self.getListWinLose(board)
+            winning, notwinning = self.getListWinNeutral(board)
             if len(notwinning) == 0:
                 return (board.getPiece(random.choice(winning)))
             return (board.getPiece(random.choice(notwinning)))
 
 
-    def getListWinLose(self, board):
+    def getListWinNeutral(self, board):
         toCheck = board.getLinesToCheck
         possible = board.getPieceRemained
         winningList = []
@@ -97,6 +97,9 @@ class AI :
         if self.difficulty == 0 :
             return board.getAvailable[0]
 
+        if turn < 3 :
+                return random.choice(board.getAvailable)
+
         if self.difficulty == 1 :
             v, actionSet = self.miniMax(board,piece, 1)
             #print("v value", v)
@@ -109,14 +112,11 @@ class AI :
 
         if self.difficulty == 2 :
 
-            if turn == 1 :
-                return random.choice(board.getAvailable)
             actionSet = self.miniMax(board,piece, 2)[1]
             return (actionSet[1],actionSet[2])
             
         if self.difficulty == 3 :
-            if turn == 1 :
-                return random.choice(board.getAvailable)
+            
             if turn <=4 :
                 actionSet = self.miniMax(board,piece, 2)[1]
                 return (actionSet[1],actionSet[2])
@@ -142,9 +142,14 @@ class AI :
             return -self.evalValue(board, depth), None
         if depth <= 0 :
             return self.evalValue(board, depth), None
+        if board.checkWin() :
+            print("ce plateau gagne pas besoin de chercher plus loin/ in maxvalue")
+            board.showGrid()
+            return 1000000, None
         bestValue = float("-inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         #print(depth)
+        bestb = board
         for actionSet,nextBoard in self.successors(board, piece) :
             currentMin = self.minValue(nextBoard, depth-1,alpha, beta)
             #print(actionSet, str(actionSet[0]))
@@ -154,20 +159,32 @@ class AI :
             #print(currentValue)
             if bestValue < currentValue:
                 #print("got replaced in maxValue")
+                bestb = nextBoard
                 bestValue = currentValue
                 bestAction = actionSet
+            
+
             if bestValue >= beta :
+                #print("best val in maxval",bestValue, bestAction)
+                #bestb.showGrid()
                 return bestValue, bestAction
             alpha = max(alpha,bestValue)
         #print(bestAction)        
+        #print("best val in maxval",bestValue, bestAction)
+        #bestb.showGrid()
         return bestValue, bestAction
 
     def minValue(self, board,depth,alpha, beta,piece = None) :
         if depth <= 0 or len(board.getPieceRemained) == 0:
             return -self.evalValue(board, depth), None
+        if board.checkWin() :
+            print("ce plateau gagne pas besoin de chercher plus loin")
+            board.showGrid()
+            return -1000000, None
         bestValue = float("inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         #print(depth)
+        bestb = board
         for actionSet,nextBoard in self.successors(board,piece) :
             currentMax = self.maxValue(nextBoard, depth-1,alpha, beta)
             #print(actionSet, str(actionSet[0]))
@@ -177,29 +194,20 @@ class AI :
                 #print("got replaced in minValue")
                 bestValue = currentValue
                 bestAction = actionSet
+            
             if bestValue >= alpha :
+                #print("best val in minval",bestValue, bestAction)
+                #bestb.showGrid()
                 return bestValue, bestAction
             beta = max(beta,bestValue)
         #print("BESTBEST ===========",bestValue, bestAction)  
         #bb.showGrid()   
+        #print("best val in minval",bestValue, bestAction)
+        #bestb.showGrid()
         return bestValue, bestAction
 
-    def evalValue(self, board,depth, comportement = 3):
+    def evalValue(self, board,depth):
 
-        """
-        TODO MAKE A PROPER EVAL TEST
-        """
-        #Evaluate the board for the next turn
-
-        #if board.checkWin() :
-        #    if depth %2 == 0 :
-        #    #print("got to eval float")
-        #        return -99999999999999999999999
-        #    else : 
-        #        return 99999999999999999999999
-
-        #Case : Victory on this board
-        #board.showGrid()
         if board.checkWin() :
             #print("win trouvé")
             #board.showGrid()
@@ -211,7 +219,7 @@ class AI :
         g = board.getGrid
         value = 0
         
-        if comportement == 2 :
+        if self.difficulty == 2 :
             
             for lines in board.getLinesToCheck : 
                 countNone = 0
@@ -229,7 +237,62 @@ class AI :
                     addvalue = 200
                 value += addvalue
 
-        if comportement == 3 :
+        if self.difficulty == 3 :
+            #Cherche à disperser le plus
+            for lines in board.getLinesToCheck : 
+                countNone = 0
+                addvalue = 0
+                winning, notwinning =  self.getListWinNeutral(board)
+                turn = len(winning) + len(notwinning)
+                for i in range(4):
+                    if lines[i] == None :
+                        countNone += 1      
+                if countNone == 0 : #Not win but filled
+
+                #si c'est impair on lui file pièce qui gagne pas, et lui forcément il nous reste que pièce qui gagne
+                    #test ex si il reste 2 pièce qui ne gagne pas
+                    """
+                    - on fournit la pièce qui ne gagne pas
+                    - le joueur fournit l'autre pièce
+                    - on est obligé de fournit pièce gagnante
+                    """
+                    #print("line empty test",lines,notwinning)
+                    if len(notwinning) % 2 == 0 :
+                        addvalue = -600
+                    else : 
+                        # priorité faible(ne las remmplir)
+                        addvalue = +200
+                    
+                if countNone == 1 : #pour remplir 3ème place
+                    """[pair win impair lose]
+                    list piece restante [1,2,3,4,5] (2pair) (3impair)
+                    [10,12,6,' '] 
+
+                    donne 1
+                    recoit 3
+                    donne 5
+                    recoit un truc qui gagne"""
+
+                    if len(notwinning) % 2 == 0 :
+                        addvalue = +600
+                    else :
+                        # priorité faible(ne las remmplir)
+                        addvalue = -500
+                                  
+                if countNone == 2 :
+                    addvalue = -300
+
+                if countNone == 3 :
+                    addvalue = -50
+
+                if countNone == 4 : #veut-elle laissé des lignes vides
+                    addvalue = 0
+                    
+                value += addvalue
+
+
+#Test
+        if self.difficulty == 5:
             #Cherche à disperser le plus
             for lines in board.getLinesToCheck : 
                 countNone = 0
