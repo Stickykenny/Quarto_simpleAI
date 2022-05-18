@@ -26,9 +26,9 @@ while not(0<= difficulty < 4):
     
 current_ai = AI(difficulty)
 
-play_order = random.randint(0,1)
+play_order = 1#random.randint(0,1)
 if play_order == 0: #Equivalent à un False
-    print("L' Intelligence Artificiel commence en premier")
+    print("L'Intelligence Artificiel commence en premier")
 else : 
     print("Le Joueur comence en premier")
 

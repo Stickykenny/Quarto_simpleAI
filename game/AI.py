@@ -1,5 +1,6 @@
 import random
 import copy as cp
+from piece import *
 
 class AI :
     def __init__(self, difficulty) :
@@ -8,7 +9,6 @@ class AI :
 
     def choosePiece(self, board) : 
         if self.difficulty == 0 :
-            print(board.getPieceRemained[0])
             return(board.getPiece(board.getPieceRemained[0]))
 
         if self.difficulty == 1 :
@@ -23,7 +23,6 @@ class AI :
                 return (board.getPiece(random.choice(winning)))
 
             if random.uniform(0, 1)> 0.75 :
-                #print("gave a winning piece")
                 return  (board.getPiece(random.choice(winning)))
             else :
                 return  (board.getPiece(random.choice(notwinning)))
@@ -43,11 +42,9 @@ class AI :
     
         # points = nb d'occurence d'un attribut sur le plateau et dont il est possible d'en profiter
         # points =  [ [occurence de valeur 0] ,  [occurence de valeur 1]  ]
-        #print(toCheck)
         for line in toCheck :
             cur_points = [0,0,0,0]
             if None in line :
-                #print("visiting this",line)
                 countNone = 0
                 
                 for i in range(4):
@@ -55,39 +52,27 @@ class AI :
                         countNone += 1
                         continue
                     pieceValues = board.getPiece(line[i]).getPieceValue
-                    #print("pv",pieceValues)
                     for j in range(len(pieceValues)) :
                         intJ = int(j)
                         if pieceValues[intJ] == 1:
                             cur_points[intJ] += 1
-                #print("this line with 3 pieces has points ;", cur_points)
 
                 #Check all piece in possible winning place  
                 
                 if countNone == 1 :
                     for p in possible :
                         points= cp.deepcopy(cur_points)
-                        #print("deepcopy",points)
-                        #print(p)
                         piece =  board.getPiece(p).getPieceValue
-                        #print(piece)
                         for u in range(4) :
                             if piece[u] == 1:
                                 points[u] += 1       
-                        #print("value of this line  ",points) 
                         if 4 in points or 0 in points :
 
-                            #print("cette pièce est gagnante",piece)
-                            #print(winningList)
-                            #print(possible)
-                            winningList.append(p)
-                            #possible.remove(piece)
-                            #print("remove done")
-                    
-
-        # winningList , notwinningList
+                            if p not in winningList:
+                                winningList.append(p)
+                           
         notwinningList = [item for item in possible if item not in winningList]
-        #print(winningList,"\nk",notwinningList)
+        
         return winningList, notwinningList
 
 
@@ -96,7 +81,6 @@ class AI :
             #Test difficulty
             actionSet = self.miniMax(board,piece, 2)[1]
             return (actionSet[1],actionSet[2])
-            return board.getAvailable[0]
 
         if turn < 3 :
                 return random.choice(board.getAvailable)
@@ -113,7 +97,6 @@ class AI :
             return (actionSet[1],actionSet[2])
             
         if self.difficulty == 3 :
-            
             if turn <=4 :
                 actionSet = self.miniMax(board,piece, 2)[1]
                 return (actionSet[1],actionSet[2])
@@ -135,100 +118,71 @@ class AI :
 
     def maxValue(self, board,depth,alpha, beta,piece = None) :
         if board.checkWin() :
-            #Si la grille reçu est déjà gagnante, => ca veut dire que le joueur à réussi à gagner
-            #print("ce plateau gagne pas besoin de chercher plus loin/ in maxvalue")
-            board.showGrid()
             return -1000000, None
         if len(board.getPieceRemained) == 0:
             #Cas partie finie sans gagnant : Egalité (connoté négativement)
-            return -500000
+            return -500000, None
         if depth <= 0 :
             return self.evalValue(board, depth), None
         bestValue = float("-inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
-        #print(depth)
-        bestb = board
+
         for actionSet,nextBoard in self.successors(board, piece) :
             self.nodeexplo += 1
             currentMin = self.minValue(nextBoard, depth-1,alpha, beta)
-            #print(actionSet, str(actionSet[0]))
-            #print("current min",currentMin)
+
             currentValue = currentMin[0]
-            #print("current :",currentValue )
-            #print(currentValue)
-            #nextBoard.showGrid()
+ 
             if bestValue < currentValue:
-                #print("got replaced in maxValue")
-                bestb = nextBoard
                 bestValue = currentValue
                 bestAction = actionSet
-            #print("best :",bestValue)
-            #print(currentValue)
-            #bestb.showGrid()
+
 
             if bestValue >= beta :
-                #print("best val in maxval",bestValue, bestAction)
-                #bestb.showGrid()
-                print("AlphaBeta applied")
+
                 return bestValue, bestAction
             alpha = max(alpha,bestValue)
-        #print(bestAction)        
-        #print("best val in maxval",bestValue, bestAction)
-        #bestb.showGrid()
+
         return bestValue, bestAction
 
     def minValue(self, board,depth,alpha, beta,piece = None) :
         if board.checkWin() :
         #Si la grille reçu est déjà gagnante, => ca veut dire que la grille faite par l'IA est gagnante
-            #print("ce plateau gagne pas besoin de chercher plus loin")
-            board.showGrid()
+            
             return 1000000, None
         if len(board.getPieceRemained) == 0:
             #Cas partie finie sans gagnant : Egalité (connoté négativement)
-            return -500000
+            return -500000, None
         if depth <= 0 :
             return -self.evalValue(board, depth), None
     
         bestValue = float("inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
-        #print(depth)
-        bestb = board
+
         for actionSet,nextBoard in self.successors(board,piece) :
             self.nodeexplo += 1
             currentMax = self.maxValue(nextBoard, depth-1,alpha, beta)
-            #print(actionSet, str(actionSet[0]))
-            #print("current max",currentMax)
             currentValue = currentMax[0]
             if bestValue > currentValue:
-                #print("got replaced in minValue")
                 bestValue = currentValue
                 bestAction = actionSet
-            #print("best :",bestValue)
-            #print(currentValue)
-            #bestb.showGrid()
+
             if bestValue >= alpha :
-                #print("best val in minval",bestValue, bestAction)
-                #bestb.showGrid()
-                print("AlphaBeta applied")
                 return bestValue, bestAction
             beta = max(beta,bestValue)
-        #print("BESTBEST ===========",bestValue, bestAction)  
-        #bb.showGrid()   
-        #print("best val in minval",bestValue, bestAction)
-        #bestb.showGrid()
+
         return bestValue, bestAction
 
     def evalValue(self, board,depth):
 
+        def checkAnySimilar(piece, model) :
+            for i in range(4):
+                if int(piece[i]) == model[i] :
+                    return True
+
         if board.checkWin() :
-            #print("win trouvé")
-            #board.showGrid()
-            #POSITIF
             return 1000000
 
-
-        #here calculate eval 
-        g = board.getGrid
         value = 0
         
         if self.difficulty == 2 :
@@ -250,46 +204,58 @@ class AI :
                 value += addvalue
 
         if self.difficulty == 3 or self.difficulty == 0:
-            #Cherche à disperser le plus
             for lines in board.getLinesToCheck : 
                 countNone = 0
                 addvalue = 0
-                winning, notwinning =  self.getListWinNeutral(board)
-                turn = len(winning) + len(notwinning)
                 for i in range(4):
                     if lines[i] == None :
                         countNone += 1      
-                if countNone == 0 : #Not win but filled
+                compteur = [0,0,0,0]
+                model = [5,5,5,5]
+                notwinning = []
+                winning = []
 
-                #si c'est impair on lui file pièce qui gagne pas, et lui forcément il nous reste que pièce qui gagne
-                    #test ex si il reste 2 pièce qui ne gagne pas
-                    """
-                    - on fournit la pièce qui ne gagne pas
-                    - le joueur fournit l'autre pièce
-                    - on est obligé de fournit pièce gagnante
-                    """
-                    #print("line empty test",lines,notwinning)
-                    if len(notwinning) % 2 == 0 :
-                        addvalue = 600
-                    else : 
-                        # priorité faible(ne las remmplir)
-                        addvalue = -200
-                    
+
                 if countNone == 1 : #pour remplir 3ème place
-                    """[pair win impair lose]
-                    list piece restante [1,2,3,4,5] (2pair) (3impair)
-                    [10,12,6,' '] 
+                    for i in lines : 
+                        if i == None :
+                            continue
+                        i = bin(int(i))[2:].zfill(4)
+                        for j in range(4) :
+                            compteur[j] += int(i[j])
+                            
+                        for y in range(4):
+                            if compteur[y]== 0 :
+                                model[y] = 0
+                            if compteur[y]== 3 : 
+                                model[y] = 1
+                    
 
-                    donne 1
-                    recoit 3
-                    donne 5
-                    recoit un truc qui gagne"""
-
+                    for p in board.getPieceRemained : 
+                        piece = bin(int(p))[2:].zfill(4)
+                        
+                        if checkAnySimilar(piece, model) :
+                            winning.append(p)
+                        else : 
+                            notwinning.append(p)
+                    """"
+                    not winning après placer en 3eme place = [1,2,3]
+                    IA donne 1
+                    Nous on donne 2
+                    IA donne 3 
+                    Joueru donne gagnat à IA
+                    => Si c'est impair => IA GAGNE
+                    """
                     if len(notwinning) % 2 == 0 :
-                        addvalue = -600
+                        addvalue = -2000
                     else :
                         # priorité faible(ne las remmplir)
-                        addvalue = +500
+                        addvalue = +2000
+
+                if countNone == 0 : #Cas bloquer une ligne
+                    #Not win but filled
+                    addvalue = 0
+                
                                   
                 if countNone == 2 :
                     addvalue = +300
@@ -324,9 +290,6 @@ class AI :
                     addvalue = 10
                 value += addvalue
 
-
-        #board.showGrid()
-        #print(value)
         return value
 
     def successors(self , board, pieceGiven = None):
@@ -338,13 +301,10 @@ class AI :
         
         emptyCase = board.getAvailable
         result = []
-        #print("givenpiece : ",pieceGiven)
         for place in (emptyCase):
             tmp_board = cp.deepcopy(board)
             
             if pieceGiven != None :
-                #print("entrered !=None")
-                #print((str(pieceGiven),place[0],place[1]))
                 piece = pieceGiven#board.getPiece(pieceGiven)
                 tmp_board.placerPiece(piece,place[0],place[1])
                 action = (piece,place[0],place[1])
@@ -352,18 +312,12 @@ class AI :
             else :
                 for piece in tmp_board.getPieceRemained :
                     tmp_board = cp.deepcopy(board)
-                    #print((piece,place[0],place[1]))
-                    #print(tmp_board.getPiece(piece))
-                    #print(tmp_board.getPiece(piece).id)
                     tmp_board.placerPiece(tmp_board.getPiece(piece),place[0],place[1])
                     #print(tmp_board.getGrid)
                     #tmp_board.showGrid()
                     action = (piece,place[0],place[1])
                     result.append([action,tmp_board])
 
-        #result = [  (used_piece, line, column) , [grid_obtained] ,  (used_piece, line, column) , [grid_obtained], ... ]
-        #print("action possible :",result)
-        #for i in result :
-        #    print(i[1].showGrid())
+
         return result
 

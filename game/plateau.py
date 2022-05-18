@@ -193,7 +193,7 @@ if __name__ == "__main__":
     #B.placerPiece(B.getPiece(4),3,3)
     #B.placerPiece(B.getPiece(5),1,2)
     #print(B.getGrid)
-    #print(B.getLinesToCheck)
+    print(B.getLinesToCheck)
     #print(B.checkWin())
     B.showGrid()
     print("--- 1.38917295152691253 seconds ---")
