@@ -26,7 +26,7 @@ while not(0<= difficulty < 4):
     
 current_ai = AI(difficulty)
 
-play_order = 1#random.randint(0,1)
+play_order = random.randint(0,1)
 if play_order == 0: #Equivalent à un False
     print("L'Intelligence Artificiel commence en premier")
 else : 
@@ -69,8 +69,19 @@ while gameON :
     else :
         chosenPiece = current_ai.choosePiece(board)
         print("L'IA vous a choisi la pièce : ",chosenPiece.getPieceInfo)
+        if turn >= 5 :
+
+            print("-- Pièces restantes : ")
+
+            print_iterator = 0
+            for x in (board.getPieceRemained): 
+                if print_iterator == 5 :
+                    print(Piece.getPiece(x).getPieceInfo)
+                else :
+                    print(Piece.getPiece(x).getPieceInfo, end ='  ')
+                print_iterator = (print_iterator+1) % 6
+            print("")
         print("Veuillez choisir la case où vous voulez déposer la piece")
-    #print(chosenPiece)
     #Choix du placement 
     if not(play_order) :
         inputcorrect = False
