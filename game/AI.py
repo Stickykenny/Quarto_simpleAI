@@ -1,17 +1,15 @@
 import random
-
-from pyparsing import WordStart
-from piece import Piece
-import plateau
 import copy as cp
-import numpy as np
+
 class AI :
     def __init__(self, difficulty) :
         self.difficulty = difficulty
+        self.nodeexplo = 0
 
     def choosePiece(self, board) : 
         if self.difficulty == 0 :
             print(board.getPieceRemained[0])
+            return(board.getPiece(board.getPieceRemained[0]))
 
         if self.difficulty == 1 :
             return board.getPiece(random.choice(board.getPieceRemained))
@@ -95,6 +93,9 @@ class AI :
 
     def choosePosition(self, board, piece, turn) : 
         if self.difficulty == 0 :
+            #Test difficulty
+            actionSet = self.miniMax(board,piece, 2)[1]
+            return (actionSet[1],actionSet[2])
             return board.getAvailable[0]
 
         if turn < 3 :
@@ -102,13 +103,9 @@ class AI :
 
         if self.difficulty == 1 :
             v, actionSet = self.miniMax(board,piece, 1)
-            #print("v value", v)
             if v == 1000000 :
-                #print("ct positif")
-                #print(actionSet)
                 return (actionSet[1],actionSet[2])
             return random.choice(board.getAvailable)
-            #Il veut gagner si il le voit direct
 
         if self.difficulty == 2 :
 
@@ -126,47 +123,53 @@ class AI :
             else :
                 actionSet = self.miniMax(board,piece, 4)[1]
                 return (actionSet[1],actionSet[2])
-            #TODO
-            pass
 
 
     def miniMax(self, board,piece, depth) :
         #return the a in Action(state) maximaxing Min_value(result(a,state))
         v ,actionSet = self.maxValue(board,depth,alpha=float("-inf"), beta=float("inf"),piece=piece)
+        print("node explored",self.nodeexplo)
+        self.nodeexplo = 0
         return v, actionSet
 
-        pass
 
     def maxValue(self, board,depth,alpha, beta,piece = None) :
+        if board.checkWin() :
+            #Si la grille reçu est déjà gagnante, => ca veut dire que le joueur à réussi à gagner
+            #print("ce plateau gagne pas besoin de chercher plus loin/ in maxvalue")
+            board.showGrid()
+            return -1000000, None
         if len(board.getPieceRemained) == 0:
-            return -self.evalValue(board, depth), None
+            #Cas partie finie sans gagnant : Egalité (connoté négativement)
+            return -500000
         if depth <= 0 :
             return self.evalValue(board, depth), None
-        if board.checkWin() :
-            print("ce plateau gagne pas besoin de chercher plus loin/ in maxvalue")
-            board.showGrid()
-            return 1000000, None
         bestValue = float("-inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         #print(depth)
         bestb = board
         for actionSet,nextBoard in self.successors(board, piece) :
+            self.nodeexplo += 1
             currentMin = self.minValue(nextBoard, depth-1,alpha, beta)
             #print(actionSet, str(actionSet[0]))
             #print("current min",currentMin)
             currentValue = currentMin[0]
-            #print("best :",bestValue)
+            #print("current :",currentValue )
             #print(currentValue)
+            #nextBoard.showGrid()
             if bestValue < currentValue:
                 #print("got replaced in maxValue")
                 bestb = nextBoard
                 bestValue = currentValue
                 bestAction = actionSet
-            
+            #print("best :",bestValue)
+            #print(currentValue)
+            #bestb.showGrid()
 
             if bestValue >= beta :
                 #print("best val in maxval",bestValue, bestAction)
                 #bestb.showGrid()
+                print("AlphaBeta applied")
                 return bestValue, bestAction
             alpha = max(alpha,bestValue)
         #print(bestAction)        
@@ -175,17 +178,23 @@ class AI :
         return bestValue, bestAction
 
     def minValue(self, board,depth,alpha, beta,piece = None) :
-        if depth <= 0 or len(board.getPieceRemained) == 0:
-            return -self.evalValue(board, depth), None
         if board.checkWin() :
-            print("ce plateau gagne pas besoin de chercher plus loin")
+        #Si la grille reçu est déjà gagnante, => ca veut dire que la grille faite par l'IA est gagnante
+            #print("ce plateau gagne pas besoin de chercher plus loin")
             board.showGrid()
-            return -1000000, None
+            return 1000000, None
+        if len(board.getPieceRemained) == 0:
+            #Cas partie finie sans gagnant : Egalité (connoté négativement)
+            return -500000
+        if depth <= 0 :
+            return -self.evalValue(board, depth), None
+    
         bestValue = float("inf")
         bestAction = (board.getPieceRemained[0],board.getAvailable[0][0],board.getAvailable[0][1])
         #print(depth)
         bestb = board
         for actionSet,nextBoard in self.successors(board,piece) :
+            self.nodeexplo += 1
             currentMax = self.maxValue(nextBoard, depth-1,alpha, beta)
             #print(actionSet, str(actionSet[0]))
             #print("current max",currentMax)
@@ -194,10 +203,13 @@ class AI :
                 #print("got replaced in minValue")
                 bestValue = currentValue
                 bestAction = actionSet
-            
+            #print("best :",bestValue)
+            #print(currentValue)
+            #bestb.showGrid()
             if bestValue >= alpha :
                 #print("best val in minval",bestValue, bestAction)
                 #bestb.showGrid()
+                print("AlphaBeta applied")
                 return bestValue, bestAction
             beta = max(beta,bestValue)
         #print("BESTBEST ===========",bestValue, bestAction)  
@@ -212,7 +224,7 @@ class AI :
             #print("win trouvé")
             #board.showGrid()
             #POSITIF
-            return -1000000
+            return 1000000
 
 
         #here calculate eval 
@@ -228,16 +240,16 @@ class AI :
                     if lines[i] == None :
                         countNone += 1            
                 if countNone == 1 : #y'a 1 case vide pour win et j'veux pas que l'ennemy la
-                    addvalue = -400
+                    addvalue = 400
                 if countNone == 2 :
-                    addvalue = 50
+                    addvalue = -50
                 if countNone == 3 :
-                    addvalue = 100
+                    addvalue = -100
                 if countNone == 4 : #On veut garder le plus de ligne rempli de None
-                    addvalue = 200
+                    addvalue = -200
                 value += addvalue
 
-        if self.difficulty == 3 :
+        if self.difficulty == 3 or self.difficulty == 0:
             #Cherche à disperser le plus
             for lines in board.getLinesToCheck : 
                 countNone = 0
@@ -258,10 +270,10 @@ class AI :
                     """
                     #print("line empty test",lines,notwinning)
                     if len(notwinning) % 2 == 0 :
-                        addvalue = -600
+                        addvalue = 600
                     else : 
                         # priorité faible(ne las remmplir)
-                        addvalue = +200
+                        addvalue = -200
                     
                 if countNone == 1 : #pour remplir 3ème place
                     """[pair win impair lose]
@@ -274,16 +286,16 @@ class AI :
                     recoit un truc qui gagne"""
 
                     if len(notwinning) % 2 == 0 :
-                        addvalue = +600
+                        addvalue = -600
                     else :
                         # priorité faible(ne las remmplir)
-                        addvalue = -500
+                        addvalue = +500
                                   
                 if countNone == 2 :
-                    addvalue = -300
+                    addvalue = +300
 
                 if countNone == 3 :
-                    addvalue = -50
+                    addvalue = +50
 
                 if countNone == 4 : #veut-elle laissé des lignes vides
                     addvalue = 0
@@ -301,15 +313,15 @@ class AI :
                     if lines[i] == None :
                         countNone += 1      
                 if countNone == 0 :
-                    addvalue = -2    
+                    addvalue = 2    
                 if countNone == 1 :
-                    addvalue = -4
+                    addvalue = 4
                 if countNone == 2 :
-                    addvalue = -6
+                    addvalue = 6
                 if countNone == 3 :
-                    addvalue = -8
+                    addvalue = 8
                 if countNone == 4 :
-                    addvalue = -10
+                    addvalue = 10
                 value += addvalue
 
 
@@ -354,3 +366,4 @@ class AI :
         #for i in result :
         #    print(i[1].showGrid())
         return result
+
