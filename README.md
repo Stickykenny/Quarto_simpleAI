@@ -1,36 +1,14 @@
 # Quarto_simpleAI
 
-##Contexte
+Projet en binome pour l'UE Intelligence Artificielle du semestre 2 de la Licence 3
+(01/2022 - 05/2022)
 
-projet L3 info IA
+Implémente l'algorithme du Minimax avec élagage sur le jeu du Quarto
 
 [Lien du rapport]
-(https://docs.google.com/document/d/1gt1v3bro4mvbQx4LVqnuhpbOytaMb3c0klrDeLpxRig/edit?usp=sharing)
+https://docs.google.com/document/d/1gt1v3bro4mvbQx4LVqnuhpbOytaMb3c0klrDeLpxRig/edit?usp=sharing
 
 
+## Copyright
 
-
-## Description des IA
-
-some texts here
-
-<details><summary>Lvl 1</summary>
-<p>
-empty
-</p>
-</details>
-
-<details><summary>Lvl 2</summary>
-<p>
-empty
-</p>
-</details>
-
-<details><summary>Lvl 3</summary>
-<p>
-empty
-</p>
-</details>
-
-## Obligatory rickroll
-[![rickrollhere](http://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](http://www.youtube.com/watch?v=dQw4w9WgXcQ)
+NOT FREE NOR OPEN SOURCE, do not use this repository, it is purely for viewing

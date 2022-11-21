@@ -1,6 +1,7 @@
 from piece import *
 import numpy as np
 import copy
+
 class Board :
     def __init__(self) :
         self.board = [[None for i in range(4)] for j in range(4)]
@@ -196,6 +197,5 @@ if __name__ == "__main__":
     print(B.getLinesToCheck)
     #print(B.checkWin())
     B.showGrid()
-    print("--- 1.38917295152691253 seconds ---")
 
 
